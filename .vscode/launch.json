@@ -1,0 +1,17 @@
+{
+    "version": "0.1.0",
+    "configurations": [
+        {
+            "name": "Python: mcp-llm",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,  // Allows debugging library code if needed
+            "subProcess": false,   // Prevents attaching to subprocesses automatically
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        }
+    ]
+}
