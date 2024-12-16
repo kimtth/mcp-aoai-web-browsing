@@ -1,9 +1,10 @@
 import base64
 import json
-from fastmcp import FastMCP
-from fastmcp.prompts.base import UserMessage
+from fastmcp import Context, FastMCP
 from mcp.types import TextContent, ImageContent
 from playwright.async_api import Page
+from client_bridge.llm_client import LLMClient, LLMResponse
+from client_bridge.llm_config import get_default_llm_config
 from server.browser_manager import BrowserManager
 
 
@@ -12,6 +13,8 @@ class BrowserNavigationServer(FastMCP):
         super().__init__(server_name)
         self.mcp = self
         self.browser_manager = BrowserManager()
+        self.llm_config = get_default_llm_config()
+        self.llm_client = LLMClient(self.llm_config)
         self.screenshots = dict()
         self.register_tools()
         self.register_resources()
@@ -145,6 +148,43 @@ class BrowserNavigationServer(FastMCP):
                 return return_string
             except Exception as e:
                 raise ValueError(f"Script execution failed: {e}")
+
+        @self.mcp.tool()
+        async def extract_selector_by_page_content(user_message: str) -> str:
+            """Try to find a css selector by current page content."""
+            # Ensure the browser page is available
+            page = await self.browser_manager.ensure_browser()
+
+            # Get the HTML content of the page
+            html_content = await page.content()
+
+            # Prepare the prompt for the LLM
+            prompt = (
+                "Given the following HTML content of a web page:\n\n"
+                f"{html_content}\n\n"
+                f"User request: '{user_message}'\n\n"
+                "Provide the CSS selector that best matches the user's request. Return only the CSS selector."
+            )
+
+            # Use the LLM client to generate the selector
+            llm_response: LLMResponse = await self.llm_client.invoke_with_prompt(prompt)
+            selector: str = llm_response["content"]
+
+            # Return the selector
+            return selector.strip()
+
+        # Long-running example to read all screenshots from a list of file names
+        @self.mcp.tool()
+        async def read_all_screenshots(file_name_list: list[str], ctx: Context) -> str:
+            """Read all screenshots from a list of file names."""
+            for i, file_name in enumerate(file_name_list):
+                ctx.info(f"Processing {file_name}...")
+                await ctx.report_progress(i, len(file_name_list))
+
+                # Read another resource if needed
+                data = await ctx.read_resource(f"screenshot://{file_name}")
+
+            return "Processing complete"
 
     def register_resources(self):
         @self.mcp.resource("console://logs")
