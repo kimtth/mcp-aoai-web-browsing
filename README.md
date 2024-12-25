@@ -2,11 +2,11 @@
 
 - A minimal server/client application implementation utilizing the Model Context Protocol (MCP) and Azure OpenAI.
 
-    1. The MCP server is built with FastMCP.  
-    2. The client is created by ChatGPT to call the MCP server. 
-    3. The server will call a function on the server, which is created using Playwright (Web Testing and Automation framework created by MS).
-    4. The MCP response about tools will be converted to the OpenAI function calling format.  
-    5. The bridge that converts the MCP server response to the OpenAI function calling format customises the implementation from the MCP-LLM Bridge. To ensure a stable connection, the server object is passed directly into the bridge. 
+    1. The MCP server is built with `FastMCP`.  
+    2. `Playwright` is an an open source, end to end testing framework by Microsoft for testing your modern web applications. 
+    3. The MCP response about tools will be converted to the OpenAI function calling format.  
+    4. The bridge that converts the MCP server response to the OpenAI function calling format customises the `MCP-LLM Bridge` implementation.
+    5. To ensure a stable connection, the server object is passed directly into the bridge. 
 
 ## Model Context Protocol (MCP)
 
@@ -36,8 +36,7 @@
 
 ### Configuration
 
-
-During the development phase in December 2024, the Python project should be initiated with 'uv'. Other dependency management libraries, such as 'pip' and 'poetry', are not yet fully supported by the CLI.
+During the development phase in December 2024, the Python project should be initiated with 'uv'. Other dependency management libraries, such as 'pip' and 'poetry', are not yet fully supported by the MCP CLI.
 
 1. Rename `.env.template` to `.env`, then fill in the values in `.env` for Azure OpenAI:
 
@@ -79,8 +78,8 @@ pip install uv
 ```
 uv run: Run a script.
 uv venv: Create a new virtual environment. By default, '.venv'.
-uv add --script: Add a dependency to a script
-uv remove --script: Remove a dependency from a script
+uv add: Add a dependency to a script
+uv remove: Remove a dependency from a script
 uv sync: Sync (Install) the project's dependencies with the environment.
 ```
 
