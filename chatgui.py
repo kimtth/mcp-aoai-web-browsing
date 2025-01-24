@@ -30,7 +30,8 @@ class ClientBridgeGUI:
         self.master.title("Client Bridge GUI")
 
         # Set application icon
-        icon_path = os.path.join(os.getcwd(), "doc", "globe_icon.png")
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        icon_path = os.path.join(current_dir, "doc", "globe_icon.png")
         icon_image = PhotoImage(file=icon_path)
         self.master.iconphoto(False, icon_image)
 
@@ -84,6 +85,9 @@ class ClientBridgeGUI:
 
         # Initialize the bridge asynchronously
         asyncio.run_coroutine_threadsafe(self.initialize_bridge(), self.loop)
+
+        # Bind the close event to the close method
+        self.master.protocol("WM_DELETE_WINDOW", self.close)
 
     def start_event_loop(self):
         """Start the asyncio event loop."""
@@ -139,6 +143,12 @@ class ClientBridgeGUI:
 
         # Automatically scroll to the latest message
         self.text_area.yview(END)
+
+    def close(self):
+        """Handle closing of the application and cleanup."""
+        logger.info("Closing application and cleaning up resources.")
+        self.loop.call_soon_threadsafe(self.loop.stop)
+        self.master.destroy()
 
 
 if __name__ == "__main__":

@@ -47,7 +47,14 @@ During the development phase in December 2024, the Python project should be init
     AZURE_OPEN_AI_API_VERSION=
     ```
 
-1. Execute `chatgui.py`
+1. Install `uv` for python library management
+
+    ```bash
+    pip install uv
+    uv sync
+    ```
+
+1. Execute `python chatgui.py`
 
     - The sample screen shows the client launching a browser to navigate to the URL.
 
@@ -68,13 +75,10 @@ async def playwright_navigate(url: str, timeout=30000, wait_until="load"):
 Tool(name='playwright_navigate', description='Navigate to a URL.', inputSchema={'properties': {'url': {'title': 'Url', 'type': 'string'}, 'timeout': {'default': 30000, 'title': 'timeout', 'type': 'string'}
 ```
 
-### uv
+### Tip: uv
 
 - [features](https://docs.astral.sh/uv/getting-started/features)
 
-```cmd
-pip install uv
-```
 ```
 uv run: Run a script.
 uv venv: Create a new virtual environment. By default, '.venv'.
