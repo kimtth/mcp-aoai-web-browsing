@@ -1,5 +1,7 @@
 ## MCP Server & Client implementation for using Azure OpenAI
 
+[![smithery badge](https://smithery.ai/badge/mcp-web-auto)](https://smithery.ai/server/mcp-web-auto)
+
 - A minimal server/client application implementation utilizing the Model Context Protocol (MCP) and Azure OpenAI.
 
     1. The MCP server is built with `FastMCP`.  
@@ -99,3 +101,4 @@ taskkill /IM python.exe /F
 <!-- ### Sample query
 
 Navigate to website http://eaapp.somee.com and click the login link. In the login page, enter the username and password as "admin" and "password" respectively and perform login. Then click the Employee List page and click "Create New" button and enter realistic employee details to create for Name, Salary, DurationWorked, Select dropdown for Grade as CLevel and Email. -->
+
