@@ -1,0 +1,29 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - azureOpenAiEndpoint
+      - azureOpenAiApiKey
+      - azureOpenAiDeploymentModel
+      - azureOpenAiApiVersion
+    properties:
+      azureOpenAiEndpoint:
+        type: string
+        description: The endpoint for Azure OpenAI.
+      azureOpenAiApiKey:
+        type: string
+        description: The API key for Azure OpenAI.
+      azureOpenAiDeploymentModel:
+        type: string
+        description: The deployment model for Azure OpenAI.
+      azureOpenAiApiVersion:
+        type: string
+        description: The API version for Azure OpenAI.
+  commandFunction:
+    # A function that produces the CLI command to start the MCP on stdio.
+    |-
+    (config) => ({ command: 'uv', args: ['run', 'fastmcp', 'dev', './server/browser_navigator_server.py:app'], env: { AZURE_OPEN_AI_ENDPOINT: config.azureOpenAiEndpoint, AZURE_OPEN_AI_API_KEY: config.azureOpenAiApiKey, AZURE_OPEN_AI_DEPLOYMENT_MODEL: config.azureOpenAiDeploymentModel, AZURE_OPEN_AI_API_VERSION: config.azureOpenAiApiVersion } })
