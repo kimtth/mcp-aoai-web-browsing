@@ -1,6 +1,6 @@
 ## MCP Server & Client implementation for using Azure OpenAI
 
-[![smithery badge](https://smithery.ai/badge/mcp-web-auto)](https://smithery.ai/server/mcp-web-auto)
+<!-- [![smithery badge](https://smithery.ai/badge/mcp-web-auto)](https://smithery.ai/server/mcp-web-auto) -->
 
 - A minimal server/client application implementation utilizing the Model Context Protocol (MCP) and Azure OpenAI.
 
