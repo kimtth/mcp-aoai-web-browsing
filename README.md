@@ -1,5 +1,6 @@
 ## MCP Server & Client implementation for using Azure OpenAI
 
+[![Trust Score](https://archestra.ai/mcp-catalog/api/badge/quality/kimtth/mcp-aoai-web-browsing)](https://archestra.ai/mcp-catalog/kimtth__mcp-aoai-web-browsing)
 <!-- [![smithery badge](https://smithery.ai/badge/mcp-web-auto)](https://smithery.ai/server/mcp-web-auto) -->
 
 - A minimal server/client application implementation utilizing the Model Context Protocol (MCP) and Azure OpenAI.
