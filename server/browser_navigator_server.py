@@ -38,27 +38,24 @@ class BrowserNavigationServer(FastMCP):
             """Take a screenshot of the current page or a specific element."""
             try:
                 page: Page = await self.browser_manager.ensure_browser()
-                element = await page.query_selector(selector) if selector else None
-                screeenshot_options = {
-                    "type": "png",
-                    "full_page": True,
-                    "element": element,
-                    # "mask": True # TODO
-                }
 
-                if element:
-                    screenshot = await page.screenshot(**screeenshot_options)
-                    # Convert the screenshot to a base64 string
-                    screenshot_base64 = base64.b64encode(screenshot).decode("utf-8")
-                    self.screenshots[name] = screenshot_base64
-                    return [
-                        TextContent(type="text", text=f"Screenshot {name} taken"),
-                        ImageContent(
-                            type="image", data=screenshot_base64, mimeType="image/png"
-                        ),
-                    ]
+                if selector:
+                    element = await page.query_selector(selector)
+                    if not element:
+                        return f"Element not found: {selector}"
+                    screenshot = await element.screenshot(type="png")
                 else:
-                    return f"Element not found: {selector}"
+                    screenshot = await page.screenshot(type="png", full_page=True)
+
+                # Convert the screenshot to a base64 string
+                screenshot_base64 = base64.b64encode(screenshot).decode("utf-8")
+                self.screenshots[name] = screenshot_base64
+                return [
+                    TextContent(type="text", text=f"Screenshot {name} taken"),
+                    ImageContent(
+                        type="image", data=screenshot_base64, mimeType="image/png"
+                    ),
+                ]
             except Exception as e:
                 raise ValueError(f"Screenshot failed: {e}")
 
@@ -67,6 +64,7 @@ class BrowserNavigationServer(FastMCP):
             """Click an element on the page."""
             try:
                 page: Page = await self.browser_manager.ensure_browser()
+                await page.wait_for_selector(selector)
                 await page.click(selector)
                 return f"Clicked on {selector}"
             except Exception as e:
@@ -168,7 +166,7 @@ class BrowserNavigationServer(FastMCP):
 
             # Use the LLM client to generate the selector
             llm_response: LLMResponse = await self.llm_client.invoke_with_prompt(prompt)
-            selector: str = llm_response["content"]
+            selector: str = llm_response.content
 
             # Return the selector
             return selector.strip()
@@ -182,7 +180,7 @@ class BrowserNavigationServer(FastMCP):
                 await ctx.report_progress(i, len(file_name_list))
 
                 # Read another resource if needed
-                data = await ctx.read_resource(f"screenshot://{file_name}")
+                await ctx.read_resource(f"screenshot://{file_name}")
 
             return "Processing complete"
 
@@ -214,37 +212,4 @@ class BrowserNavigationServer(FastMCP):
             return f"Hello world:\n\n{code}"
 
 
-""" 
-When executing the MCP Inspector in a terminal, use the following command:
-
-```bash
-cmd> fastmcp dev ./server/browser_navigator_server.py:app
-```
-
 app = BrowserNavigationServer()
-
-- `server/browser_navigator_server.py` specifies the file path.
-- `app` refers to the server object created by `BrowserNavigationServer`.
-
-After running the command, the following message will be displayed:
-
-```
-> Starting MCP Inspector...
-> 🔍 MCP Inspector is up and running at http://localhost:5173 🚀
-```
-
-**Important:** Do not use `__main__` to launch the MCP Inspector. This will result in the following error:
-
-    No server object found in **.py. Please either:
-    1. Use a standard variable name (mcp, server, or app)
-    2. Specify the object name with file:object syntax
-"""
-# app = BrowserNavigationServer()
-print("BrowserNavigationServer is running...")
-# print all attributes of the mcp
-# print(dir(app))
-
-# if __name__ == "__main__":
-#     app = BrowserNavigationServer()
-#     app.run()
-#     print("BrowserNavigationServer is running...")

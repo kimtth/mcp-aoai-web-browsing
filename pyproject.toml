@@ -4,17 +4,17 @@ version = "0.1.0"
 description = ""
 authors = ["kimtth <kimtth@email.com>"]
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 dependencies = [
-    "aiohttp>=3.11.10",
-    "asyncio>=3.4.3",
-    "fastmcp>=0.4.1",
+    "aiohttp>=3.13.5",
+    "asyncio>=4.0.0",
+    "fastmcp>=3.2.0",
     "loguru>=0.7.3",
-    "mcp>=1.1.1",
-    "openai>=1.57.1",
-    "pydantic>=2.10.3",
-    "pytest-playwright>=0.6.2",
-    "python-dotenv>=1.0.1",
-    "typing-extensions>=4.12.2",
+    "mcp>=1.27.0",
+    "openai>=2.30.0",
+    "pydantic>=2.12.5",
+    "pytest-playwright>=0.7.2",
+    "python-dotenv>=1.2.2",
+    "typing-extensions>=4.15.0",
 ]
 

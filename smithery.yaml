@@ -26,4 +26,4 @@ startCommand:
   commandFunction:
     # A function that produces the CLI command to start the MCP on stdio.
     |-
-    (config) => ({ command: 'uv', args: ['run', 'fastmcp', 'dev', './server/browser_navigator_server.py:app'], env: { AZURE_OPEN_AI_ENDPOINT: config.azureOpenAiEndpoint, AZURE_OPEN_AI_API_KEY: config.azureOpenAiApiKey, AZURE_OPEN_AI_DEPLOYMENT_MODEL: config.azureOpenAiDeploymentModel, AZURE_OPEN_AI_API_VERSION: config.azureOpenAiApiVersion } })
+    (config) => ({ command: 'uv', args: ['run', 'fastmcp', 'run', './server/browser_navigator_server.py:app'], env: { AZURE_OPEN_AI_ENDPOINT: config.azureOpenAiEndpoint, AZURE_OPEN_AI_API_KEY: config.azureOpenAiApiKey, AZURE_OPEN_AI_DEPLOYMENT_MODEL: config.azureOpenAiDeploymentModel, AZURE_OPEN_AI_API_VERSION: config.azureOpenAiApiVersion } })

@@ -1,6 +1,4 @@
-## MCP Server & Client implementation for using Azure OpenAI
-
-<!-- [![smithery badge](https://smithery.ai/badge/mcp-web-auto)](https://smithery.ai/server/mcp-web-auto) -->
+## MCP Server & Client w/ Azure OpenAI & OpenAI
 
 - A minimal server/client application implementation utilizing the Model Context Protocol (MCP) and Azure OpenAI.
 
@@ -9,6 +7,7 @@
     3. The MCP response about tools will be converted to the OpenAI function calling format.  
     4. The bridge that converts the MCP server response to the OpenAI function calling format customises the `MCP-LLM Bridge` implementation.
     5. To ensure a stable connection, the server object is passed directly into the bridge. 
+    6. The `client_bridge` supports both in-process and external (stdio) MCP server connections, enabling reuse by different clients (e.g., Claude Code, VS Code, custom scripts).
 
 ## Model Context Protocol (MCP)
 
@@ -61,6 +60,103 @@ During the development phase in December 2024, the Python project should be init
     - The sample screen shows the client launching a browser to navigate to the URL.
 
     <img alt="chatgui" src="doc/chatgui_gpt_generate.png" width="300"/>
+
+### Using with External Clients
+
+The MCP server can be used by external clients (Claude Desktop, VS Code, Claude Code, etc.) via `mcp.json` configuration.
+
+#### Claude Desktop / Claude Code
+
+Add to your `claude_desktop_config.json` (Claude Desktop) or `.claude/mcp.json` (Claude Code):
+
+```json
+{
+  "mcpServers": {
+    "browser-navigator": {
+      "command": "uv",
+      "args": ["run", "fastmcp", "run", "./server/browser_navigator_server.py:app"],
+      "cwd": "/path/to/mcp-aoai-web-browsing",
+      "env": {
+        "AZURE_OPEN_AI_ENDPOINT": "...",
+        "AZURE_OPEN_AI_API_KEY": "...",
+        "AZURE_OPEN_AI_DEPLOYMENT_MODEL": "...",
+        "AZURE_OPEN_AI_API_VERSION": "..."
+      }
+    }
+  }
+}
+```
+
+#### VS Code
+
+Add to `.vscode/mcp.json` in your workspace:
+
+```json
+{
+  "servers": {
+    "browser-navigator": {
+      "command": "uv",
+      "args": ["run", "fastmcp", "run", "./server/browser_navigator_server.py:app"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "AZURE_OPEN_AI_ENDPOINT": "...",
+        "AZURE_OPEN_AI_API_KEY": "...",
+        "AZURE_OPEN_AI_DEPLOYMENT_MODEL": "...",
+        "AZURE_OPEN_AI_API_VERSION": "..."
+      }
+    }
+  }
+}
+```
+
+#### Using the Bridge Programmatically (stdio)
+
+The `client_bridge` also supports connecting to external MCP servers via stdio from Python:
+
+```python
+from client_bridge import BridgeConfig, MCPServerConfig, BridgeManager
+from client_bridge.llm_config import get_default_llm_config
+
+config = BridgeConfig(
+    server_config=MCPServerConfig(
+        command="uv",
+        args=["run", "fastmcp", "run", "./server/browser_navigator_server.py:app"],
+    ),
+    llm_config=get_default_llm_config(),
+    system_prompt="You are a helpful assistant.",
+)
+
+async with BridgeManager(config) as bridge:
+    response = await bridge.process_message("Navigate to https://example.com")
+```
+
+#### Using Standard OpenAI (non-Azure)
+
+```python
+from client_bridge.llm_config import get_openai_llm_config
+
+config = BridgeConfig(
+    mcp=server,
+    llm_config=get_openai_llm_config(),
+)
+```
+
+Set environment variables:
+
+```bash
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-...
+```
+
+#### Direct Tool Execution
+
+For clients that manage their own LLM loop, the bridge exposes tool metadata and direct execution:
+
+```python
+async with BridgeManager(config) as bridge:
+    tools = bridge.get_tools()  # OpenAI function calling format
+    result = await bridge.execute_tool("playwright_navigate", {"url": "https://example.com"})
+```
 
 ### w.r.t. 'stdio'
 

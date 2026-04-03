@@ -1,6 +1,7 @@
 from fastmcp import FastMCP
 from pydantic import BaseModel
-from typing import Optional
+from typing import Dict, List, Optional
+
 
 class LLMConfig(BaseModel):
     """Configuration for LLM client"""
@@ -14,13 +15,21 @@ class LLMConfig(BaseModel):
     azure_endpoint: Optional[str] = None
     deploy_name: Optional[str] = None
 
+
+class MCPServerConfig(BaseModel):
+    """Configuration for connecting to an external MCP server via stdio"""
+    command: str
+    args: List[str] = []
+    env: Optional[Dict[str, str]] = None
+
+
 class BridgeConfig(BaseModel):
     """Configuration for the MCP-LLM Bridge"""
-    mcp: FastMCP
+    mcp: Optional[FastMCP] = None  # In-process FastMCP server
+    server_config: Optional[MCPServerConfig] = None  # External MCP server (stdio)
     llm_config: LLMConfig
     system_prompt: Optional[str] = None
 
     class Config:
         arbitrary_types_allowed = True
 
-    

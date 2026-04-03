@@ -11,7 +11,9 @@ class MCPLLMBridge:
 
     def __init__(self, config: BridgeConfig):
         self.config = config
-        self.mcp_client_session = MCPClient(config.mcp)
+        self.mcp_client_session = MCPClient(
+            config.mcp, server_config=config.server_config
+        )
         self.llm_client = LLMClient(config.llm_config)
 
         self.llm_client.system_prompt = f"{config.system_prompt}"
@@ -113,6 +115,15 @@ class MCPLLMBridge:
         # Replace any characters that might cause issues
         return name.replace("-", "_").replace(" ", "_").lower()
 
+    def get_tools(self) -> List[Dict[str, Any]]:
+        """Get available tools in OpenAI function calling format"""
+        return self.llm_client.tools
+
+    async def execute_tool(self, tool_name: str, arguments: dict) -> Any:
+        """Execute a tool directly through MCP (without LLM loop)"""
+        mcp_name = self.tool_name_mapping.get(tool_name, tool_name)
+        return await self.mcp_client_session.call_tool(mcp_name, arguments)
+
     async def process_message(self, message: str) -> str:
         """Process a user message through the bridge"""
         try:
@@ -205,4 +216,6 @@ class BridgeManager:
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit"""
+        if self.bridge:
+            await self.bridge.mcp_client_session.disconnect()
         logger.debug("Context manager exit")
