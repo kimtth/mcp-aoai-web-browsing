@@ -1,0 +1,1 @@
+"""Local authorization fixture and shared helpers; no eager SDK imports."""
