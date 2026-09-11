@@ -1,7 +1,8 @@
-from typing import Any, List, Optional
 from contextlib import AsyncExitStack
-from loguru import logger
+from typing import Any
+
 from fastmcp import FastMCP
+from loguru import logger
 from mcp.shared.memory import (
     create_connected_server_and_client_session as client_session,
 )
@@ -14,7 +15,7 @@ class MCPClient:
         self.mcp = mcp
         self.server_config = server_config
         self._session = None
-        self._exit_stack: Optional[AsyncExitStack] = None
+        self._exit_stack: AsyncExitStack | None = None
 
     async def connect(self):
         """Establishes connection to MCP server"""
@@ -30,8 +31,8 @@ class MCPClient:
                 )
             elif self.server_config:
                 # External server via stdio
-                from mcp.client.stdio import stdio_client, StdioServerParameters
                 from mcp import ClientSession
+                from mcp.client.stdio import StdioServerParameters, stdio_client
 
                 params = StdioServerParameters(
                     command=self.server_config.command,
@@ -62,7 +63,7 @@ class MCPClient:
             self._session = None
             logger.debug("Disconnected from MCP server")
 
-    async def get_available_tools(self) -> List[Any]:
+    async def get_available_tools(self) -> list[Any]:
         """List available tools"""
         logger.debug("Requesting available tools from MCP server")
         try:

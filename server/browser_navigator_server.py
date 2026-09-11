@@ -1,8 +1,10 @@
 import base64
 import json
+
 from fastmcp import Context, FastMCP
-from mcp.types import TextContent, ImageContent
+from mcp.types import ImageContent, TextContent
 from playwright.async_api import Page
+
 from client_bridge.llm_client import LLMClient, LLMResponse
 from client_bridge.llm_config import get_default_llm_config
 from server.browser_manager import BrowserManager
@@ -15,7 +17,7 @@ class BrowserNavigationServer(FastMCP):
         self.browser_manager = BrowserManager()
         self.llm_config = get_default_llm_config()
         self.llm_client = LLMClient(self.llm_config)
-        self.screenshots = dict()
+        self.screenshots = {}
         self.register_tools()
         self.register_resources()
         self.register_prompts()
@@ -29,11 +31,11 @@ class BrowserNavigationServer(FastMCP):
                 await page.goto(url, timeout=timeout, wait_until=wait_until)
                 return f"Navigated to {url} with {wait_until} wait"
             except Exception as e:
-                raise ValueError(f"Navigation failed: {e}")
+                raise ValueError(f"Navigation failed: {e}") from e
 
         @self.mcp.tool()
         async def playwright_screenshot(
-            name: str, selector: str = None, width: int = 800, height: int = 600
+            name: str, selector: str | None = None, width: int = 800, height: int = 600
         ):
             """Take a screenshot of the current page or a specific element."""
             try:
@@ -57,7 +59,7 @@ class BrowserNavigationServer(FastMCP):
                     ),
                 ]
             except Exception as e:
-                raise ValueError(f"Screenshot failed: {e}")
+                raise ValueError(f"Screenshot failed: {e}") from e
 
         @self.mcp.tool()
         async def playwright_click(selector: str):
@@ -68,7 +70,7 @@ class BrowserNavigationServer(FastMCP):
                 await page.click(selector)
                 return f"Clicked on {selector}"
             except Exception as e:
-                raise ValueError(f"Failed to click: {e}")
+                raise ValueError(f"Failed to click: {e}") from e
 
         @self.mcp.tool()
         async def playwright_fill(selector: str, value: str):
@@ -79,7 +81,7 @@ class BrowserNavigationServer(FastMCP):
                 await page.fill(selector, value)
                 return f"Filled {selector} with {value}"
             except Exception as e:
-                raise ValueError(f"Failed to fill: {e}")
+                raise ValueError(f"Failed to fill: {e}") from e
 
         @self.mcp.tool()
         async def playwright_select(selector: str, value: str):
@@ -90,7 +92,7 @@ class BrowserNavigationServer(FastMCP):
                 await page.select_option(selector, value)
                 return f"Selected {value} in {selector}"
             except Exception as e:
-                raise ValueError(f"Failed to select: {e}")
+                raise ValueError(f"Failed to select: {e}") from e
 
         @self.mcp.tool()
         async def playwright_hover(selector: str):
@@ -101,7 +103,7 @@ class BrowserNavigationServer(FastMCP):
                 await page.hover(selector)
                 return f"Hovered over {selector}"
             except Exception as e:
-                raise ValueError(f"Failed to hover: {e}")
+                raise ValueError(f"Failed to hover: {e}") from e
 
         @self.mcp.tool()
         async def playwright_evaluate(script: str):
@@ -145,7 +147,7 @@ class BrowserNavigationServer(FastMCP):
                 )
                 return return_string
             except Exception as e:
-                raise ValueError(f"Script execution failed: {e}")
+                raise ValueError(f"Script execution failed: {e}") from e
 
         @self.mcp.tool()
         async def extract_selector_by_page_content(user_message: str) -> str:

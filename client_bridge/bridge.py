@@ -1,9 +1,11 @@
 import json
-from typing import Dict, List, Any, Optional
-from client_bridge.mcp_client import MCPClient
-from client_bridge.llm_client import LLMClient
-from client_bridge.config import BridgeConfig
+from typing import Any
+
 from loguru import logger
+
+from client_bridge.config import BridgeConfig
+from client_bridge.llm_client import LLMClient
+from client_bridge.mcp_client import MCPClient
 
 
 class MCPLLMBridge:
@@ -18,8 +20,8 @@ class MCPLLMBridge:
 
         self.llm_client.system_prompt = f"{config.system_prompt}"
 
-        self.available_tools: List[Any] = []
-        self.tool_name_mapping: Dict[str, str] = (
+        self.available_tools: list[Any] = []
+        self.tool_name_mapping: dict[str, str] = (
             {}
         )  # Maps OpenAI tool names to MCP tool names
 
@@ -48,13 +50,13 @@ class MCPLLMBridge:
             self.llm_client.tools = converted_tools
 
             return True
-        except Exception as e:
-            logger.error(f"Bridge initialization failed: {str(e)}", exc_info=True)
+        except Exception:
+            logger.exception("Bridge initialization failed")
             return False
 
     def _convert_mcp_tools_to_openai_format(
-        self, mcp_tools: List[Any]
-    ) -> List[Dict[str, Any]]:
+        self, mcp_tools: list[Any]
+    ) -> list[dict[str, Any]]:
         """Convert MCP tool format to OpenAI tool format"""
         openai_tools = []
 
@@ -115,7 +117,7 @@ class MCPLLMBridge:
         # Replace any characters that might cause issues
         return name.replace("-", "_").replace(" ", "_").lower()
 
-    def get_tools(self) -> List[Dict[str, Any]]:
+    def get_tools(self) -> list[dict[str, Any]]:
         """Get available tools in OpenAI function calling format"""
         return self.llm_client.tools
 
@@ -147,12 +149,12 @@ class MCPLLMBridge:
 
             return response.content
         except Exception as e:
-            logger.error(f"Error processing message: {str(e)}", exc_info=True)
-            return f"Error processing message: {str(e)}"
+            logger.exception("Error processing message")
+            return f"Error processing message: {e!s}"
 
     async def _handle_tool_calls(
-        self, tool_calls: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+        self, tool_calls: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """Handle tool calls through MCP"""
         tool_responses = []
 
@@ -193,9 +195,9 @@ class MCPLLMBridge:
                 tool_responses.append({"tool_call_id": tool_call.id, "output": output})
 
             except Exception as e:
-                logger.error(f"Tool execution failed: {str(e)}", exc_info=True)
+                logger.exception("Tool execution failed")
                 tool_responses.append(
-                    {"tool_call_id": tool_call.id, "output": f"Error: {str(e)}"}
+                    {"tool_call_id": tool_call.id, "output": f"Error: {e!s}"}
                 )
 
         return tool_responses
@@ -206,7 +208,7 @@ class BridgeManager:
 
     def __init__(self, config: BridgeConfig):
         self.config = config
-        self.bridge: Optional[MCPLLMBridge] = None
+        self.bridge: MCPLLMBridge | None = None
 
     async def __aenter__(self) -> MCPLLMBridge:
         """Context manager entry"""
