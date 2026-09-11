@@ -1,7 +1,9 @@
-from typing import Dict, List, Any, Optional
-from openai import AzureOpenAI, OpenAI
-from .config import LLMConfig
+from typing import Any
+
 from loguru import logger
+from openai import AzureOpenAI, OpenAI
+
+from .config import LLMConfig
 
 
 class LLMResponse:
@@ -22,7 +24,7 @@ class LLMResponse:
         logger.debug(f"Message content: {self.content}")
         logger.debug(f"Tool calls: {self.tool_calls}")
         
-    def get_message(self) -> Dict[str, Any]:
+    def get_message(self) -> dict[str, Any]:
         """Get standardized message format"""
         return {
             "role": "assistant",
@@ -50,7 +52,7 @@ class LLMClient:
         self.messages = []
         self.system_prompt = None
     
-    def _prepare_messages(self) -> List[Dict[str, Any]]:
+    def _prepare_messages(self) -> list[dict[str, Any]]:
         """Prepare messages for API call"""
         formatted_messages = []
         
@@ -72,7 +74,7 @@ class LLMClient:
         
         return await self.invoke([])
     
-    async def invoke(self, tool_results: Optional[List[Dict[str, Any]]] = None) -> LLMResponse:
+    async def invoke(self, tool_results: list[dict[str, Any]] | None = None) -> LLMResponse:
         """Invoke the LLM with optional tool results"""
         if tool_results:
             for result in tool_results:
@@ -82,13 +84,15 @@ class LLMClient:
                     "tool_call_id": result["tool_call_id"]
                 })
         
+        model = self.config.deploy_name if self.config.azure_endpoint else self.config.model
+        generation_options = {self.config.token_limit_parameter: self.config.max_tokens}
+        if self.config.temperature is not None:
+            generation_options["temperature"] = self.config.temperature
         completion = self.client.chat.completions.create(
-            # To handle Azure OpenAI specific parameters
-            model= self.config.deploy_name if hasattr(self.config, 'azure_endpoint') else self.config.model,
+            model=model,
             messages=self._prepare_messages(),
             tools=self.tools if self.tools else None,
-            temperature=self.config.temperature,
-            max_tokens=self.config.max_tokens
+            **generation_options,
         )
         
         response = LLMResponse(completion)

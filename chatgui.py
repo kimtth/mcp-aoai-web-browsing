@@ -1,24 +1,26 @@
 import asyncio
 import os
+import threading
 from tkinter import (
-    Tk,
-    Text,
-    Button,
-    Scrollbar,
-    VERTICAL,
-    RIGHT,
-    Y,
     END,
+    RIGHT,
+    VERTICAL,
+    Button,
     Frame,
     PhotoImage,
+    Scrollbar,
+    Text,
+    Tk,
+    Y,
 )
+
 from dotenv import load_dotenv
-from client_bridge.config import BridgeConfig
+from loguru import logger
+
 from client_bridge.bridge import BridgeManager
+from client_bridge.config import BridgeConfig
 from client_bridge.llm_config import get_default_llm_config
 from server.browser_navigator_server import BrowserNavigationServer
-from loguru import logger
-import threading
 
 # Load environment variables
 load_dotenv()
@@ -31,7 +33,7 @@ class ClientBridgeGUI:
 
         # Set application icon
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        icon_path = os.path.join(current_dir, "doc", "globe_icon.png")
+        icon_path = os.path.join(current_dir, "docs", "globe_icon.png")
         icon_image = PhotoImage(file=icon_path)
         self.master.iconphoto(False, icon_image)
 
@@ -123,7 +125,7 @@ class ClientBridgeGUI:
             # Schedule the UI update in the main thread
             self.master.after(0, self.display_response, f"Response: {response}\n")
         except Exception as e:
-            logger.error(f"Error occurred: {e}")
+            logger.exception("Error occurred")
             self.master.after(0, self.display_message, f"Error: {e}\n")
 
     def display_message(self, message):

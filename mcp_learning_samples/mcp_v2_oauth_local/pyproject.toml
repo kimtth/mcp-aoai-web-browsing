@@ -1,0 +1,13 @@
+[project]
+name = "mcp-v2-auth-sample"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = ["mcp==2.2.0", "playwright==1.58.0", "httpx2>=2.5,<3"]
+
+[tool.uv]
+package = false
+
+[[tool.uv.index]]
+name = "microsoft"
+url = "https://packagefeedproxy.microsoft.io/pypi/simple/"
+default = true

@@ -1,0 +1,11 @@
+[project]
+name = "mcp-v2-browser-sample"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = ["mcp==2.2.0", "playwright==1.58.0", "httpx2>=2.5,<3"]
+
+[dependency-groups]
+dev = ["pytest>=8,<9"]
+
+[tool.uv]
+package = false

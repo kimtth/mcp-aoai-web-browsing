@@ -1,10 +1,12 @@
-import os
 import asyncio
+import os
+
 from dotenv import load_dotenv
-from client_bridge.config import BridgeConfig, LLMConfig
-from client_bridge.bridge import BridgeManager
-from server.browser_navigator_server import BrowserNavigationServer
 from loguru import logger
+
+from client_bridge.bridge import BridgeManager
+from client_bridge.config import BridgeConfig, LLMConfig
+from server.browser_navigator_server import BrowserNavigationServer
 
 
 async def main():
@@ -40,11 +42,11 @@ async def main():
             except KeyboardInterrupt:
                 logger.info("\nExiting...")
                 break
-            except Exception as e:
-                logger.error(f"\nError occurred: {e}")
+            except Exception:
+                logger.exception("Error occurred")
 
 if __name__ == "__main__":
     try:
         asyncio.run(main())
-    except Exception as e:
-        logger.error(f"Unhandled exception: {e}")
+    except Exception:
+        logger.exception("Unhandled exception")
