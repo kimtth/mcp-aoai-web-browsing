@@ -82,11 +82,9 @@ first. The server loads the repository's `.env` and still requires Azure
 configuration at startup, even if the host uses a different model provider.
 Do not put credentials in shared MCP JSON configuration.
 
-These examples describe client configuration, not an end-to-end compatibility
-guarantee. The original browser console handler currently prints diagnostic
-dictionaries to stdout, which can disrupt stdio MCP framing when a page emits
-console messages. This implementation issue is separate from client setup.
-
+<details>
+<summary>Click to expand - Claude Code, VS Code</summary>
+  
 #### Claude Desktop / Claude Code
 
 - **Claude Desktop:** open **Settings > Developer > Edit Config** to edit
@@ -137,6 +135,8 @@ Merge into `.vscode/mcp.json` in your workspace, following the
 Use **MCP: List Servers** to start the server and inspect its output. Review the
 server trust prompt before enabling tools.
 
+</details>
+
 ### Using the Bridge Programmatically
 
 #### Connecting over stdio
@@ -168,6 +168,9 @@ async def main():
 if __name__ == "__main__":
   asyncio.run(main())
 ```
+
+<details>
+<summary>Click to expand - Using Standard OpenAI</summary>
 
 #### Using Standard OpenAI (non-Azure)
 
@@ -205,6 +208,8 @@ This does **not** switch the GUI or the original server's selector-extraction
 client to OpenAI. Using the original server still requires the Azure settings
 from setup. The independent learning servers do not have that dependency.
 
+</details>
+
 #### Direct Tool Execution
 
 Inside an async function with a configured `config`, the bridge exposes tool
@@ -228,15 +233,14 @@ key is needed for these samples.
 | Sample | What it demonstrates |
 | --- | --- |
 | [MCP v1 — Browser tools](mcp_learning_samples/mcp_v1_browser_tools/README.md) | Read a page or capture a screenshot with Playwright; observe explicit MCP initialization and session handling over HTTP. |
-| [MCP v2 — Browser tools](mcp_learning_samples/mcp_v2_browser_tools/README.md) | The same browser operations with explicitly selected newer protocol mode; integration remains blocked and unverified. |
+| [MCP v2 — Browser tools](mcp_learning_samples/mcp_v2_browser_tools/README.md) | The same browser operations with explicitly selected newer protocol mode. |
 | [MCP v2 — Local OAuth](mcp_learning_samples/mcp_v2_oauth_local/README.md) | Obtain a token before calling a protected browser tool; explore issuer validation and PKCE with a local authorization fixture. Includes an SDK-independent lab; real SDK integration remains unverified. |
 
 ### Specification references
 
 The folder labels `v1` and `v2` are repository shorthand for the two protocol
 revisions compared here, not official MCP major-version names. Python SDK
-versions and protocol dates are separate. The dated references identify the
-exact specifications targeted by these samples:
+versions and protocol dates are separate:
 
 - **Core MCP 2025-11-25** defines client/server communication, including
   [initialization and version negotiation](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle).
@@ -265,9 +269,7 @@ independent samples need no LLM API key; follow each guide's setup commands.
 
 The official [Apps overview](https://modelcontextprotocol.io/docs/extensions/apps)
 links to the [2026-01-26 Apps specification](https://github.com/modelcontextprotocol/ext-apps/blob/main/specification/2026-01-26/apps.mdx).
-These examples use FastMCP 3.2.0, Prefab 0.20.2 and MCP SDK 1.27.0. A compatible
-host is required for embedded UI and tool callbacks; standalone previews are not
-full host integration tests.
+These examples use FastMCP 3.2.0, Prefab 0.20.2 and MCP SDK 1.27.0. 
 
 The official [client support matrix](https://modelcontextprotocol.io/extensions/client-matrix)
 tracks host support. The Apps overview lists Claude Desktop and VS Code GitHub
